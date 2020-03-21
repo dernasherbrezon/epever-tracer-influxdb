@@ -48,15 +48,14 @@ int epever_tracer_process(char *device, uint32_t timeoutSecond, int verbose) {
 		modbus_free(modbus);
 		return EXIT_FAILURE;
 	}
-	uint16_t *tab_rp_bits = NULL;
-	tab_rp_bits = (uint16_t *) malloc(2 * sizeof(uint16_t));
-	memset(tab_rp_bits, 0, 2 * sizeof(uint16_t));
-	rc = modbus_read_input_registers(modbus, 0x3004, 0x1, tab_rp_bits);
+	uint16_t *output = (uint16_t *) malloc(2 * sizeof(uint16_t));
+	memset(output, 0, 2 * sizeof(uint16_t));
+	rc = modbus_read_input_registers(modbus, 0x3004, 0x1, output);
 	if (rc == -1) {
 		fprintf(stderr, "Failed to modbus_read_input_registers: %s\n", modbus_strerror(errno));
 	}
-	fprintf(stdout, "voltage=%f\n", (float)(tab_rp_bits[0] / 100.0));
-	free(tab_rp_bits);
+	fprintf(stdout, "voltage=%f\n", (float)(output[0] / 100.0));
+	free(output);
 	modbus_close(modbus);
 	modbus_free(modbus);
 	return EXIT_SUCCESS;
