@@ -36,5 +36,5 @@ int main(int argc, char *argv[]) {
 		errno = EINVAL;
 		return EXIT_FAILURE;
 	}
-	return epever_tracer_process(device, timeoutSecond, verbose);
+	return epever_tracer_process(device, timeoutSecond, verbose, stdout);
 }

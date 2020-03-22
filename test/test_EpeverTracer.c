@@ -4,49 +4,83 @@
 
 START_TEST (test_unableToCreateModBus) {
 	mock.failmodbus_new_rtu = 1;
-	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0), EXIT_FAILURE);
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, stdout), EXIT_FAILURE);
 }
 END_TEST
 
 START_TEST (test_failToSetSlave) {
 	mock.failmodbus_set_slave = 1;
-	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0), EXIT_FAILURE);
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, stdout), EXIT_FAILURE);
 }
 END_TEST
 
 START_TEST (test_failToSetDebug) {
 	mock.failmodbus_set_debug = 1;
-	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 1), EXIT_FAILURE);
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 1, stdout), EXIT_FAILURE);
 }
 END_TEST
 
 START_TEST (test_failToSetErrorRecovery) {
 	mock.failmodbus_set_error_recovery = 1;
-	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0), EXIT_FAILURE);
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, stdout), EXIT_FAILURE);
 }
 END_TEST
 
 START_TEST (test_failToSetTimeout) {
 	mock.failmodbus_set_response_timeout = 1;
-	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0), EXIT_FAILURE);
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, stdout), EXIT_FAILURE);
 }
 END_TEST
 
 START_TEST (test_failToConnect) {
 	mock.failmodbus_connect = 1;
-	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0), EXIT_FAILURE);
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, stdout), EXIT_FAILURE);
 }
 END_TEST
 
 START_TEST (test_failGetHostname) {
 	mock.failgethostname = 1;
-	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0), EXIT_FAILURE);
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, stdout), EXIT_FAILURE);
 }
 END_TEST
 
 START_TEST (test_failMalloc) {
 	mock.failmalloc = 1;
-	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0), EXIT_FAILURE);
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, stdout), EXIT_FAILURE);
+}
+END_TEST
+
+void assertFiles(char *expected, char *actual) {
+	FILE *expectedPtr = fopen(expected, "r");
+	ck_assert_ptr_nonnull(expectedPtr);
+	FILE *actualPtr = fopen(actual, "r");
+	ck_assert_ptr_nonnull(actualPtr);
+	char expectedChar;
+	char actualChar;
+	do {
+		expectedChar = fgetc(expectedPtr);
+		actualChar = fgetc(actualPtr);
+		ck_assert_uint_eq(expectedChar, actualChar);
+	} while (expectedChar != EOF && actualChar != EOF);
+	fclose(expectedPtr);
+	fclose(actualPtr);
+}
+
+START_TEST (test_success) {
+	char *actual = "test_output.txt";
+	FILE *output = fopen(actual, "w");
+	mock.registers_size = 5;
+	mock.registers = (mock_register*) malloc(mock.registers_size * sizeof(mock_register));
+	mock.registers[0] = (mock_register ) { 0x3104, 1240 };
+	mock.registers[1] = (mock_register ) { 0x3101, 110 };
+	mock.registers[2] = (mock_register ) { 0x3002, 0x93E0 };
+	mock.registers[3] = (mock_register ) { 0x3003, 0x0004 };
+	mock.registers[4] = (mock_register ) { 0x3200, 0x0001 };
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, output), EXIT_SUCCESS);
+	fflush(output);
+	fclose(output);
+	assertFiles("../test/resources/expected.txt", actual);
+	remove(actual);
 }
 END_TEST
 
@@ -75,6 +109,7 @@ Suite * common_suite(void) {
 	tcase_add_test(tc_core, test_failToConnect);
 	tcase_add_test(tc_core, test_failGetHostname);
 	tcase_add_test(tc_core, test_failMalloc);
+	tcase_add_test(tc_core, test_success);
 
 	tcase_add_checked_fixture(tc_core, setup, teardown);
 	suite_add_tcase(s, tc_core);

@@ -1,3 +1,5 @@
+#define _GNU_SOURCE
+
 #include "EpeverTracer.h"
 #include <modbus/modbus-rtu.h>
 #include <stdio.h>
@@ -41,7 +43,7 @@ epever_register_t registers[] = {
 		{"device", "status", 0x3201, 1, 0}
 };
 
-int epever_tracer_process(char *device, uint32_t timeoutSecond, int verbose) {
+int epever_tracer_process(char *device, uint32_t timeoutSecond, int verbose, FILE *output) {
 	// values are defined by the protocol
 	modbus_t *modbus = modbus_new_rtu(device, 115200, 'N', 8, 1);
 	if (modbus == NULL) {
@@ -90,8 +92,9 @@ int epever_tracer_process(char *device, uint32_t timeoutSecond, int verbose) {
 		return EXIT_FAILURE;
 	}
 
-	uint16_t *output = (uint16_t*) malloc(2 * sizeof(uint16_t));
-	if (output == NULL) {
+	int maxSize = 2;
+	uint16_t *outputArray = (uint16_t*) malloc(maxSize * sizeof(uint16_t));
+	if (outputArray == NULL) {
 		modbus_close(modbus);
 		modbus_free(modbus);
 		return EXIT_FAILURE;
@@ -100,25 +103,28 @@ int epever_tracer_process(char *device, uint32_t timeoutSecond, int verbose) {
 	epever_register_t *ptr = registers;
 	const epever_register_t *endPtr = registers + sizeof(registers) / sizeof(registers[0]);
 	while (ptr < endPtr) {
-		memset(output, 0, 2 * sizeof(uint16_t));
+		memset(outputArray, 0, maxSize * sizeof(uint16_t));
 		for (int i = 0; i < ptr->size; i++) {
 			uint16_t dest;
 			rc = modbus_read_input_registers(modbus, ptr->addr + i, 0x1, &dest);
 			if (rc == -1) {
-				fprintf(stderr, "failed to read %d: %s\n", ptr->addr, modbus_strerror(errno));
+				fprintf(stderr, "failed to read 0x%x: %s\n", ptr->addr, modbus_strerror(errno));
 				break;
 			}
-			output[i] = dest;
-		}
-		uint32_t fullRegister = (output[1] << 8) | (output[0]);
-		if (ptr->toFloat == 1) {
-			fprintf(stdout, "%s,host=%s %s=%f\n", ptr->category, hostname, ptr->parameter, (float) (fullRegister / 100.0));
-		} else {
-			fprintf(stdout, "%s,host=%s %s=%d\n", ptr->category, hostname, ptr->parameter, fullRegister);
+			outputArray[i] = dest;
 		}
 		ptr++;
+		if (rc == -1) {
+			continue;
+		}
+		uint32_t fullRegister = (((uint32_t) outputArray[1]) << 16) | (outputArray[0]);
+		if (ptr->toFloat == 1) {
+			fprintf(output, "%s,host=%s %s=%.2f\n", ptr->category, hostname, ptr->parameter, (float) (fullRegister / 100.0));
+		} else {
+			fprintf(output, "%s,host=%s %s=%d\n", ptr->category, hostname, ptr->parameter, fullRegister);
+		}
 	}
-	free(output);
+	free(outputArray);
 	modbus_close(modbus);
 	modbus_free(modbus);
 	return EXIT_SUCCESS;

@@ -11,6 +11,7 @@
 #define modbus_close modbus_close_mocked
 #define gethostname gethostname_mocked
 #define malloc malloc_mocked
+#define modbus_read_input_registers modbus_read_input_registers_mocked
 
 modbus_t* modbus_new_rtu_mocked(const char *device, int baud, char parity,
                                     int data_bit, int stop_bit);
@@ -23,6 +24,7 @@ int modbus_connect_mocked(modbus_t *ctx);
 void modbus_close_mocked(modbus_t *ctx);
 int	gethostname_mocked(char *, size_t);
 void *malloc_mocked(size_t size);
+int modbus_read_input_registers_mocked(modbus_t *ctx, int addr, int nb, uint16_t *dest);
 
 #include "../src/EpeverTracer.c"
 
@@ -42,6 +44,11 @@ struct _modbus {
 };
 
 typedef struct {
+	int addr;
+	uint16_t value;
+} mock_register;
+
+typedef struct {
 	int failmodbus_new_rtu;
 	int failmodbus_set_slave;
 	int failmodbus_set_debug;
@@ -51,6 +58,8 @@ typedef struct {
 	int failgethostname;
 	char *hostname;
 	int failmalloc;
+	mock_register *registers;
+	size_t registers_size;
 } mock_status;
 
 mock_status mock;
@@ -101,6 +110,7 @@ int	gethostname_mocked(char *hostname, size_t maxSize) {
 	if( mock.failgethostname ) {
 		return -1;
 	}
+	strcpy(hostname, mock.hostname);
 	return 0;
 }
 
@@ -109,6 +119,16 @@ void* malloc_mocked(size_t size) {
 		return NULL;
 	}
 	return malloc(size);
+}
+
+int modbus_read_input_registers_mocked(modbus_t *ctx, int addr, int nb, uint16_t *dest) {
+	for (int i = 0; i < mock.registers_size; i++) {
+		if (mock.registers[i].addr == addr) {
+			*dest = mock.registers[i].value;
+			return 0;
+		}
+	}
+	return -1;
 }
 
 void modbus_free_mocked(modbus_t *ctx) {
@@ -129,4 +149,8 @@ void epever_tracer_mock_reset() {
 	mock.failgethostname = 0;
 	mock.hostname = "mockhost";
 	mock.failmalloc = 0;
+	if (mock.registers != NULL) {
+		free(mock.registers);
+	}
+	mock.registers_size = 0;
 }
