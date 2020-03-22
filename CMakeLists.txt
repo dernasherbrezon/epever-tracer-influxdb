@@ -42,7 +42,7 @@ foreach(curTest ${TEST_SOURCES})
 		target_link_libraries(${curTestName} rt)
 	endif()
 	target_link_libraries(${curTestName} m)
-	target_link_libraries(${curTestName} epeverTracerLib ${CMAKE_THREAD_LIBS_INIT} ${PC_CHECK_LDFLAGS})
+	target_link_libraries(${curTestName} epeverTracerLib ${CMAKE_THREAD_LIBS_INIT} ${MODBUS_LIBRARIES} ${PC_CHECK_LDFLAGS})
 endforeach()
 
 if(CMAKE_BUILD_TYPE MATCHES Debug)
