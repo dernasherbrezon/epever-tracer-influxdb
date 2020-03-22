@@ -52,9 +52,9 @@ END_TEST
 
 void assertFiles(char *expected, char *actual) {
 	FILE *expectedPtr = fopen(expected, "r");
-	ck_assert_ptr_nonnull(expectedPtr);
+	ck_assert_ptr_ne(expectedPtr, NULL);
 	FILE *actualPtr = fopen(actual, "r");
-	ck_assert_ptr_nonnull(actualPtr);
+	ck_assert_ptr_ne(actualPtr, NULL);
 	char expectedChar;
 	char actualChar;
 	do {
