@@ -113,8 +113,8 @@ int epever_tracer_process(char *device, uint32_t timeoutSecond, int verbose, FIL
 			}
 			outputArray[i] = dest;
 		}
-		ptr++;
 		if (rc == -1) {
+			ptr++;
 			continue;
 		}
 		uint32_t fullRegister = (((uint32_t) outputArray[1]) << 16) | (outputArray[0]);
@@ -123,6 +123,7 @@ int epever_tracer_process(char *device, uint32_t timeoutSecond, int verbose, FIL
 		} else {
 			fprintf(output, "%s,host=%s %s=%d\n", ptr->category, hostname, ptr->parameter, fullRegister);
 		}
+		ptr++;
 	}
 	free(outputArray);
 	modbus_close(modbus);

@@ -55,8 +55,8 @@ void assertFiles(char *expected, char *actual) {
 	ck_assert_ptr_ne(expectedPtr, NULL);
 	FILE *actualPtr = fopen(actual, "r");
 	ck_assert_ptr_ne(actualPtr, NULL);
-	char expectedChar;
-	char actualChar;
+	int expectedChar;
+	int actualChar;
 	do {
 		expectedChar = fgetc(expectedPtr);
 		actualChar = fgetc(actualPtr);
@@ -67,7 +67,7 @@ void assertFiles(char *expected, char *actual) {
 }
 
 START_TEST (test_success) {
-	char *actual = "test_output.txt";
+	char *actual = "test_success.txt";
 	FILE *output = fopen(actual, "w");
 	mock.registers_size = 5;
 	mock.registers = (mock_register*) malloc(mock.registers_size * sizeof(mock_register));
@@ -80,6 +80,34 @@ START_TEST (test_success) {
 	fflush(output);
 	fclose(output);
 	assertFiles("../test/resources/expected.txt", actual);
+	remove(actual);
+}
+END_TEST
+
+int getTotalRegisters() {
+	int result = 0;
+	int size = sizeof(registers) / sizeof(registers[0]);
+	for (int i = 0; i < size; i++) {
+		result += registers[i].size;
+	}
+	return result;
+}
+
+START_TEST (test_allMetrics) {
+	char *actual = "test_allMetrics.txt";
+	FILE *output = fopen(actual, "w");
+	mock.registers_size = getTotalRegisters();
+	mock.registers = (mock_register*) malloc(mock.registers_size * sizeof(mock_register));
+	for (int sourceIndex = 0, destIndex = 0; sourceIndex < mock.registers_size; sourceIndex++) {
+		for (int j = 0; j < registers[sourceIndex].size; j++) {
+			mock.registers[destIndex] = (mock_register ) { registers[sourceIndex].addr + j, 0 };
+			destIndex++;
+		}
+	}
+	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, output), EXIT_SUCCESS);
+	fflush(output);
+	fclose(output);
+	assertFiles("../test/resources/expectedallMetrics.txt", actual);
 	remove(actual);
 }
 END_TEST
@@ -110,6 +138,7 @@ Suite * common_suite(void) {
 	tcase_add_test(tc_core, test_failGetHostname);
 	tcase_add_test(tc_core, test_failMalloc);
 	tcase_add_test(tc_core, test_success);
+	tcase_add_test(tc_core, test_allMetrics);
 
 	tcase_add_checked_fixture(tc_core, setup, teardown);
 	suite_add_tcase(s, tc_core);

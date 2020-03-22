@@ -1,4 +1,4 @@
-solar,host=mockhost power=1.10
-battery,host=mockhost current=12.40
-ratedBattery,host=mockhost voltage=3000.00
-device,host=mockhost chargingMode=1
+solar,host=mockhost current=1.10
+battery,host=mockhost voltage=12.40
+ratedSolar,host=mockhost power=3000.00
+battery,host=mockhost status=1
