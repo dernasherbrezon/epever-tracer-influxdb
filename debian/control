@@ -1,0 +1,14 @@
+Source: epever-tracer-influxdb
+Maintainer: Andrey Rodionov <dernasherbrezon@gmail.com>
+Section: admin
+Priority: optional
+Standards-Version: 3.9.7
+Build-Depends: debhelper (>= 9.0.0), cmake, libmodbus-dev (>= 3.1), check, pkg-config
+Homepage: https://github.com/dernasherbrezon/epever-tracer-influxdb
+
+Package: epever-tracer-influxdb
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}, curl
+Description: Read metrics from Epever Tracer via RS485 and output to stdout
+ This package contains a cron task which will read metrics periodically
+ and send them to influxdb

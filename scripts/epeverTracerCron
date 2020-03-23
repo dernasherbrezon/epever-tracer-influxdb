@@ -1,0 +1,1 @@
+*/5 * * * * root systemd-cat --identifier="epeverTracerCron" --priority=err /usr/bin/epeverTracer.sh

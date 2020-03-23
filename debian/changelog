@@ -1,0 +1,5 @@
+epever-tracer-influxdb (1.0.0-1) disco; urgency=medium
+
+  * Initial release.
+
+ -- Andrey Rodionov <dernasherbrezon@gmail.com>  Wed, 23 Mar 2020 10:17:21 +0100

@@ -11,8 +11,7 @@ list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/src/main.c")
 
 add_executable(epeverTracer src/main.c)
 
-# fixme
-# install(TARGETS epeverTracer DESTINATION /usr/lib/apt/methods)
+install(TARGETS epeverTracer DESTINATION /usr/bin/)
 
 add_library(epeverTracerLib ${SOURCES})
 target_link_libraries(epeverTracer epeverTracerLib)

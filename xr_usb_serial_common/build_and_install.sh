@@ -10,3 +10,5 @@ fi
 modprobe -r usbserial
 modprobe usbserial
 insmod ./xr_usb_serial_common.ko
+
+# fixme blacklist cdc-acm and auto load xr on startup

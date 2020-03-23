@@ -1,0 +1,3 @@
+scripts/epeverTracerCron etc/cron.d/
+scripts/epeverTracer.conf etc/
+scripts/epeverTracer.sh usr/bin/
