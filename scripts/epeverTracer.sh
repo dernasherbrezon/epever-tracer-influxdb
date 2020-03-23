@@ -25,4 +25,4 @@ then
       exit 1
 fi
 
-epeverTracer -d ${device} -t ${modbusTimeout} | curl -XPOST "${influxdbUrl}" --header "Authorization: Token ${influxdbToken}" --data-binary @-
+epeverTracer -d ${device} -t ${modbusTimeout} | curl --silent -XPOST "${influxdbUrl}" --header "Authorization: Token ${influxdbToken}" --data-binary @-
