@@ -98,7 +98,7 @@ START_TEST (test_allMetrics) {
 	FILE *output = fopen(actual, "w");
 	mock.registers_size = getTotalRegisters();
 	mock.registers = (mock_register*) malloc(mock.registers_size * sizeof(mock_register));
-	for (int sourceIndex = 0, destIndex = 0; sourceIndex < mock.registers_size; sourceIndex++) {
+	for (int sourceIndex = 0, destIndex = 0; destIndex < mock.registers_size; sourceIndex++) {
 		for (int j = 0; j < registers[sourceIndex].size; j++) {
 			mock.registers[destIndex] = (mock_register ) { registers[sourceIndex].addr + j, 0 };
 			destIndex++;
