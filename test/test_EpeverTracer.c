@@ -79,7 +79,7 @@ START_TEST (test_success) {
 	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, output), EXIT_SUCCESS);
 	fflush(output);
 	fclose(output);
-	assertFiles("../test/resources/expected.txt", actual);
+	assertFiles("expected.txt", actual);
 	remove(actual);
 }
 END_TEST
@@ -107,7 +107,7 @@ START_TEST (test_allMetrics) {
 	ck_assert_int_eq(epever_tracer_process("/dev/ttyXRUSB0", 5, 0, output), EXIT_SUCCESS);
 	fflush(output);
 	fclose(output);
-	assertFiles("../test/resources/expectedallMetrics.txt", actual);
+	assertFiles("expectedallMetrics.txt", actual);
 	remove(actual);
 }
 END_TEST

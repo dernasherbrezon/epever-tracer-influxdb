@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <getopt.h>
 
 extern int errno;
 extern char *optarg;

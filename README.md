@@ -1,6 +1,6 @@
 ## About
 
-Read metrics from Epever Tracer via RS485 and output to stdout
+Read metrics from Epever Tracer via RS485 and output to InfluxDB.
 
 <img src="https://github.com/dernasherbrezon/epever-tracer-influxdb/raw/master/docs/screen1.png">
 
@@ -29,7 +29,7 @@ sudo apt-get install epever-tracer-influxdb
 4. Configure:
 
 ```bash
-vi /etc/epeverTracer.conf
+sudo vi /etc/epeverTracer.conf
 ```
 
 ## Build

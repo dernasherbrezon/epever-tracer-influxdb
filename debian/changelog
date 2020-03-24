@@ -1,3 +1,9 @@
+epever-tracer-influxdb (1.0.0-3) disco; urgency=medium
+
+  * fix test
+
+ -- Andrey Rodionov <dernasherbrezon@gmail.com>  Mon, 24 Mar 2020 12:17:21 +0100
+
 epever-tracer-influxdb (1.0.0-2) disco; urgency=medium
 
   * fix packaging
