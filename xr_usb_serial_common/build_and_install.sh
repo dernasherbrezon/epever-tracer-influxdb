@@ -15,6 +15,8 @@ fi
 
 modprobe -r usbserial
 modprobe usbserial
+
+make
 insmod ./xr_usb_serial_common.ko
 
 echo "blacklist cdc-acm" > /etc/modprobe.d/xrusb-blacklist.conf
