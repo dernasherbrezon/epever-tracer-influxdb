@@ -1,3 +1,9 @@
+epever-tracer-influxdb (1.0.3-2) disco; urgency=medium
+
+  * bump build
+
+ -- Andrey Rodionov <dernasherbrezon@gmail.com>  Thu, 13 Aug 2020 09:12:21 +0200
+
 epever-tracer-influxdb (1.0.3-1) disco; urgency=medium
 
   * fix cron issue
